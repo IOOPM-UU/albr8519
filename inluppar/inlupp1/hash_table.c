@@ -102,3 +102,19 @@ bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, int *result)
   }
   return false;
 }
+
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result)
+{
+  entry_t *previous = find_previous_entry(ht, key);
+  entry_t *to_remove = previous->next;
+
+  if (to_remove == NULL)
+  {
+    return false;
+  }
+
+  *result = to_remove->value;
+  previous->next = to_remove->next;
+  entry_destroy(to_remove);
+  return true;
+}

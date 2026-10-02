@@ -35,7 +35,8 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, char *key, int value);
 bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, int *result);
 
 /// @brief remove any mapping from key to a value
-/// @param ht hash table operated upon
+/// @param ht hash table
 /// @param key key to remove
-/// @return the value mapped to by key (FIXME: what if the key does not exist?)
-int ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key);
+/// @param result pointer to where the removed value will be written, if the key existed
+/// @return true if the key existed and was removed, false otherwise
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result);
