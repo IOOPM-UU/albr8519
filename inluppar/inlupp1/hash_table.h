@@ -40,3 +40,12 @@ bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, int *result);
 /// @param result pointer to where the removed value will be written, if the key existed
 /// @return true if the key existed and was removed, false otherwise
 bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result);
+
+// TODO: documentation
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, char *key);
+
+// TODO: documentation
+bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht);
+
+// TODO: documentation
+int ioopm_hash_table_size(ioopm_hash_table_t *ht);

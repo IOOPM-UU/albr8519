@@ -120,3 +120,37 @@ bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result)
   entry_destroy(to_remove);
   return true;
 }
+
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, char *key)
+{
+  int igonred_variable;
+  return ioopm_hash_table_lookup(ht, key, &igonred_variable);
+}
+
+static int bucket_size(entry_t *entry)
+{
+  int counter = 0;
+
+  while(entry != NULL) 
+  {
+    counter++;
+    entry = entry->next;
+  }
+  return counter;
+}
+
+int ioopm_hash_table_size(ioopm_hash_table_t *ht)
+{
+  int size = 0;
+
+  for (int index = 0; index < No_Buckets; index++ )
+  {
+    size += bucket_size(ht->buckets[index].next);
+  }
+  return size;
+}
+
+bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht)
+{
+ return ioopm_hash_table_size(ht) == 0; 
+}

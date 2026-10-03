@@ -134,6 +134,110 @@ void test_remove_nonexisting(void)
   ioopm_hash_table_destroy(ht);
 }
 
+// Checks for a key in an empty hashtable
+void test_has_key_empty(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  CU_ASSERT_FALSE(ioopm_hash_table_has_key(ht, "abc"));
+  
+  ioopm_hash_table_destroy(ht);
+
+}
+
+void test_has_key(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, "abc"));
+  CU_ASSERT_FALSE(ioopm_hash_table_has_key(ht, "cba"));
+
+  ioopm_hash_table_destroy(ht);
+}
+
+void test_has_multiple_keys(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  ioopm_hash_table_insert(ht, "hej", 1);
+  ioopm_hash_table_insert(ht, "abc", 2);
+  ioopm_hash_table_insert(ht, "it", 3);
+  
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, "abc"));
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, "hej"));
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, "it"));
+  CU_ASSERT_FALSE(ioopm_hash_table_has_key(ht, "cba"));
+
+ ioopm_hash_table_destroy(ht); 
+}
+
+void test_insert_remove_key(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  int result = 0;
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+  ioopm_hash_table_remove(ht, "abc", &result);
+
+  CU_ASSERT_FALSE(ioopm_hash_table_has_key(ht, "abc"));
+
+  ioopm_hash_table_destroy(ht);
+}
+
+void test_has_some_keys(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  int result = 0;
+
+  ioopm_hash_table_insert(ht, "hej", 1);
+  ioopm_hash_table_insert(ht, "abc", 2);
+  ioopm_hash_table_insert(ht, "it", 3);
+
+  ioopm_hash_table_remove(ht, "abc", &result);
+
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, "hej"));
+  CU_ASSERT_FALSE(ioopm_hash_table_has_key(ht, "abc"));
+  CU_ASSERT_TRUE(ioopm_hash_table_has_key(ht, "it"));
+
+  ioopm_hash_table_destroy(ht);
+}
+
+// A newly created hash table is empty
+void test_is_empty_new(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht));
+
+  ioopm_hash_table_destroy(ht);
+}
+
+// A hash table with one entry is not empty
+void test_is_empty_after_insert(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+  CU_ASSERT_FALSE(ioopm_hash_table_is_empty(ht));
+
+  ioopm_hash_table_destroy(ht);
+}
+
+// A hash table becomes empty again after removing its only entry
+void test_is_empty_after_remove(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  int result = 0;
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+  ioopm_hash_table_remove(ht, "abc", &result);
+  CU_ASSERT_TRUE(ioopm_hash_table_is_empty(ht));
+
+  ioopm_hash_table_destroy(ht);
+}
+
 int main(void) {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -162,6 +266,14 @@ int main(void) {
     (CU_add_test(my_test_suite, "Overwrite same key several times", test_insert_existing_existing) == NULL) ||
     (CU_add_test(my_test_suite, "Remove existing key", test_remove_existing) == NULL) ||
     (CU_add_test(my_test_suite, "Remove nonexisting key", test_remove_nonexisting) == NULL) ||
+    (CU_add_test(my_test_suite, "Checks if hashtable is has key while empty", test_has_key_empty) == NULL) ||
+    (CU_add_test(my_test_suite, "Checks for two keys in a ht, while only one has been inserted", test_has_key) == NULL) ||
+    (CU_add_test(my_test_suite, "Checks for multiple keys in a hashtable", test_has_multiple_keys) == NULL) ||
+    (CU_add_test(my_test_suite, "Checks for a key that has been removed", test_insert_remove_key) == NULL) ||
+    (CU_add_test(my_test_suite, "Checks for inserted/inserted & removed keys", test_has_some_keys) == NULL) ||
+    (CU_add_test(my_test_suite, "Is empty on new table", test_is_empty_new) == NULL) ||
+    (CU_add_test(my_test_suite, "Is empty after insert", test_is_empty_after_insert) == NULL) ||
+    (CU_add_test(my_test_suite, "Is empty after insert and remove", test_is_empty_after_remove) == NULL) ||
     0
   )
     {
