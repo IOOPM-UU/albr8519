@@ -4,6 +4,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define No_Buckets 17
+
 typedef struct entry entry_t;
 
 struct entry
@@ -15,11 +17,11 @@ struct entry
 
 struct hash_table
 {
-    entry_t buckets[17];
+    entry_t buckets[No_Buckets];
 };
 
 ioopm_hash_table_t *ioopm_hash_table_create(void) {
-    // Allocate space for a ioopm_hash_table_t = 17 pointers to entry_t's.
+    // Allocate a zeroed-out hash table (No_Buckets sentinel entries)
     return calloc(1, sizeof(ioopm_hash_table_t));
 }
 
@@ -30,7 +32,7 @@ static void entry_destroy(entry_t *entry)
 
 void ioopm_hash_table_destroy(ioopm_hash_table_t *ht)
 {
-  for (int i = 0; i < 17; ++i)
+  for (int i = 0; i < No_Buckets; ++i)
   {
     entry_t *current = ht->buckets[i].next;   // hoppa över sentinel-noden
     while (current != NULL)
@@ -66,7 +68,7 @@ static entry_t *entry_create(char *key, int value, entry_t *next)
 
 static entry_t *find_previous_entry(ioopm_hash_table_t *ht, char *key)
 {
-  size_t bucket = string_knr_hash(key) % 17;
+  size_t bucket = string_knr_hash(key) % No_Buckets;
   entry_t *previous = &ht->buckets[bucket];   // börja i sentinel-noden
 
   while (previous->next != NULL && strcmp(previous->next->key, key) != 0)
