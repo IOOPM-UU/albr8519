@@ -1,24 +1,8 @@
 #include "hash_table.h"
-#include <stddef.h>
+#include "hash_table_internal.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-
-#define No_Buckets 17
-
-typedef struct entry entry_t;
-
-struct entry
-{
-    char *key;      // holds the key
-    int value;      // holds the value
-    entry_t *next;  // points to the next entry (possibly NULL)
-};
-
-struct hash_table
-{
-    entry_t buckets[No_Buckets];
-};
 
 ioopm_hash_table_t *ioopm_hash_table_create(void) {
     // Allocate a zeroed-out hash table (No_Buckets sentinel entries)
