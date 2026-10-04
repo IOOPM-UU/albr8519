@@ -1,5 +1,7 @@
 #include "hash_table.h"
 #include <CUnit/Basic.h>
+#include "hash_table_iterator.h"
+#include <string.h>
 
 int init_suite(void) {
   // Change this function if you want to do something *before* you
@@ -238,6 +240,151 @@ void test_is_empty_after_remove(void)
   ioopm_hash_table_destroy(ht);
 }
 
+// An iterator over an empty hash table is at the end immediately
+void test_iterator_empty(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
+
+  CU_ASSERT_TRUE(ioopm_hash_table_iterator_at_end(it));
+
+  ioopm_hash_table_iterator_destroy(it);
+  ioopm_hash_table_destroy(ht);
+}
+
+// An iterator over a hash table with one entry visits exactly that entry
+void test_iterator_single_entry(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_insert(ht, "abc", 123);
+  ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
+
+  CU_ASSERT_FALSE_FATAL(ioopm_hash_table_iterator_at_end(it));
+
+  CU_ASSERT_STRING_EQUAL(ioopm_hash_table_iterator_current_key(it), "abc");
+  CU_ASSERT_EQUAL(ioopm_hash_table_iterator_current_value(it), 123);
+
+  ioopm_hash_table_iterator_advance(it);
+  CU_ASSERT_TRUE(ioopm_hash_table_iterator_at_end(it));
+
+  ioopm_hash_table_iterator_destroy(it);
+  ioopm_hash_table_destroy(ht);
+}
+
+/// NOTE: FOLLOWING THREE TEST CASES ARE GENERATED WITH USE OF AI ///
+
+// An iterator visits as many entries as there are in the table
+void test_iterator_several_entries(void)
+{
+  char *keys[3] = {"abc", "qwe", "asd"};
+  int values[3] = {0, 1, 2};
+
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  for (int i = 0; i < 3; ++i)
+  {
+    ioopm_hash_table_insert(ht, keys[i], values[i]);
+  }
+
+  int iteration_count = 0;
+  ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
+  while (!ioopm_hash_table_iterator_at_end(it))
+  {
+    iteration_count++;
+    ioopm_hash_table_iterator_advance(it);
+  }
+  CU_ASSERT_EQUAL(iteration_count, 3);
+
+  ioopm_hash_table_iterator_destroy(it);
+  ioopm_hash_table_destroy(ht);
+}
+
+// Every key-value pair is visited exactly once, with the correct value
+void test_iterator_visits_each_entry_once(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_insert(ht, "abc", 0);
+  ioopm_hash_table_insert(ht, "qwe", 1);
+  ioopm_hash_table_insert(ht, "asd", 2);
+
+  int abc_count = 0;
+  int qwe_count = 0;
+  int asd_count = 0;
+
+  ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
+  while (!ioopm_hash_table_iterator_at_end(it))
+  {
+    char *key = ioopm_hash_table_iterator_current_key(it);
+    int value = ioopm_hash_table_iterator_current_value(it);
+
+    if (strcmp(key, "abc") == 0)
+    {
+      abc_count++;
+      CU_ASSERT_EQUAL(value, 0);
+    }
+    else if (strcmp(key, "qwe") == 0)
+    {
+      qwe_count++;
+      CU_ASSERT_EQUAL(value, 1);
+    }
+    else if (strcmp(key, "asd") == 0)
+    {
+      asd_count++;
+      CU_ASSERT_EQUAL(value, 2);
+    }
+    else
+    {
+      CU_FAIL("iterator returned an unknown key");
+    }
+
+    ioopm_hash_table_iterator_advance(it);
+  }
+
+  CU_ASSERT_EQUAL(abc_count, 1);
+  CU_ASSERT_EQUAL(qwe_count, 1);
+  CU_ASSERT_EQUAL(asd_count, 1);
+
+  ioopm_hash_table_iterator_destroy(it);
+  ioopm_hash_table_destroy(ht);
+}
+
+// With more keys than buckets, some must share a bucket;
+// every key should still be visited exactly once
+void test_iterator_same_bucket(void)
+{
+  char *keys[20] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+                    "k", "l", "m", "n", "o", "p", "q", "r", "s", "t"};
+  int n = 20;
+  int visited[20] = {0};
+
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  for (int i = 0; i < n; ++i)
+  {
+    ioopm_hash_table_insert(ht, keys[i], i);
+  }
+
+  ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
+  while (!ioopm_hash_table_iterator_at_end(it))
+  {
+    // the value is the key's index in the array
+    int value = ioopm_hash_table_iterator_current_value(it);
+    CU_ASSERT_FATAL(value >= 0 && value < n);
+    CU_ASSERT_STRING_EQUAL(ioopm_hash_table_iterator_current_key(it), keys[value]);
+    visited[value]++;
+
+    ioopm_hash_table_iterator_advance(it);
+  }
+
+  for (int i = 0; i < n; ++i)
+  {
+    CU_ASSERT_EQUAL(visited[i], 1);
+  }
+
+  ioopm_hash_table_iterator_destroy(it);
+  ioopm_hash_table_destroy(ht);
+}
+
+/// NOTE: PREVIOUS THREE TESTCASES ARE GENERATED USING AI ///
+
 int main(void) {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -274,6 +421,11 @@ int main(void) {
     (CU_add_test(my_test_suite, "Is empty on new table", test_is_empty_new) == NULL) ||
     (CU_add_test(my_test_suite, "Is empty after insert", test_is_empty_after_insert) == NULL) ||
     (CU_add_test(my_test_suite, "Is empty after insert and remove", test_is_empty_after_remove) == NULL) ||
+    (CU_add_test(my_test_suite, "Iterator on empty table", test_iterator_empty) == NULL) ||
+    (CU_add_test(my_test_suite, "Iterator on single entry", test_iterator_single_entry) == NULL) ||
+    (CU_add_test(my_test_suite, "Iterator on several entries", test_iterator_several_entries) == NULL) ||
+    (CU_add_test(my_test_suite, "Iterator visits each entry once", test_iterator_visits_each_entry_once) == NULL) ||
+    (CU_add_test(my_test_suite, "Iterator on entries in same bucket", test_iterator_same_bucket) == NULL) ||
     0
   )
     {
