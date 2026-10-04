@@ -385,6 +385,53 @@ void test_iterator_same_bucket(void)
 
 /// NOTE: PREVIOUS THREE TESTCASES ARE GENERATED USING AI ///
 
+void test_size_empty(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht), 0);
+
+  ioopm_hash_table_destroy(ht);
+}
+
+void test_size_single(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht), 1);
+
+  ioopm_hash_table_destroy(ht);
+}
+
+void test_size_several(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+  ioopm_hash_table_insert(ht, "def", 2);
+  ioopm_hash_table_insert(ht, "ghi", 3);
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht), 3);
+
+  ioopm_hash_table_insert(ht, "abc", 4);   // overwrite, not a new entry
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht), 3);
+
+  ioopm_hash_table_destroy(ht);
+}
+
+void test_size_after_remove(void)
+{
+  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  int result = 0;
+
+  ioopm_hash_table_insert(ht, "abc", 1);
+  ioopm_hash_table_insert(ht, "def", 2);
+  ioopm_hash_table_remove(ht, "abc", &result);
+  CU_ASSERT_EQUAL(ioopm_hash_table_size(ht), 1);
+
+  ioopm_hash_table_destroy(ht);
+}
+
 int main(void) {
   // First we try to set up CUnit, and exit if we fail
   if (CU_initialize_registry() != CUE_SUCCESS)
@@ -426,6 +473,10 @@ int main(void) {
     (CU_add_test(my_test_suite, "Iterator on several entries", test_iterator_several_entries) == NULL) ||
     (CU_add_test(my_test_suite, "Iterator visits each entry once", test_iterator_visits_each_entry_once) == NULL) ||
     (CU_add_test(my_test_suite, "Iterator on entries in same bucket", test_iterator_same_bucket) == NULL) ||
+    (CU_add_test(my_test_suite, "Size of empty table", test_size_empty) == NULL) ||
+    (CU_add_test(my_test_suite, "Size of table with one entry", test_size_single) == NULL) ||
+    (CU_add_test(my_test_suite, "Size of table with several entries", test_size_several) == NULL) ||
+    (CU_add_test(my_test_suite, "Size after remove", test_size_after_remove) == NULL) ||
     0
   )
     {
