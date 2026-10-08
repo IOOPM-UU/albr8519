@@ -1,6 +1,21 @@
 #pragma once
 #include <stdbool.h>
 
+typedef struct link link_t;
+
+struct link
+{
+  int value;
+  struct link *next;
+};
+
+struct list
+{
+  struct link *first;
+  struct link *last;
+  int size;
+};
+
 typedef struct list ioopm_list_t; /// Meta: struct definition goes in C file
 
 /// @brief Creates a new empty list

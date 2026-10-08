@@ -1,19 +1,6 @@
 #include "linked_list.h"
 #include <stdlib.h>
 
-typedef struct link link_t;
-
-struct link {
-    int value;      // Nodens värde
-    link_t *next;   // Pekare till nästa nod
-};
-
-struct list {
-    link_t *first;  // Dummy noden
-    link_t *last;   // Sista noden
-    int size;       // Listans storlek eller längd
-};
-
 /// @brief Creates a new empty list
 /// @return an empty linked list
 ioopm_list_t *ioopm_list_create(void)
