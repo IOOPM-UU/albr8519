@@ -1,5 +1,6 @@
 #include "linked_list.h"
 #include <stdlib.h>
+#include <assert.h>
 
 /// @brief Creates a new empty list
 /// @return an empty linked list
@@ -111,7 +112,7 @@ void ioopm_list_insert(ioopm_list_t *list, int index, int value)
 {
     assert(0 <= index && index <= list->size - 1 && "Index to get is out of bounds" );
 
-    if(index = 0)
+    if (index == 0)
     {
         ioopm_list_prepend(list, value);
     }
@@ -128,6 +129,8 @@ void ioopm_list_insert(ioopm_list_t *list, int index, int value)
     }
 }
 
+
+
 /// @brief Remove an element from a linked list in O(n) time.
 /// The valid values of index are [0,n-1] for a list of n elements,
 /// where 0 means the first element and n-1 means the last element.
@@ -137,7 +140,33 @@ void ioopm_list_insert(ioopm_list_t *list, int index, int value)
 /// @return the value removed
 int ioopm_list_remove(ioopm_list_t *list, int index)
 {
-    // TODO
+    assert(0 <= index && index < list->size && "Index to be removed is out of bounds");
+
+    struct link *previous = NULL;
+    struct link *to_remove;
+
+    if(index == 0)
+    {
+        to_remove = list->first;
+        list->first = to_remove->next;
+    }
+    else
+    {
+        previous = find_previous_link(list, index);
+        to_remove = previous->next;
+        previous->next = to_remove->next;
+    }
+
+    if (to_remove = list->last)
+    {
+        list->last = previous;
+    }
+
+    int value = to_remove->value;
+    free(to_remove);
+    list->size--;
+    return value;
+
 }
 
 /// @brief Retrieve an element from a linked list in O(n) time.
