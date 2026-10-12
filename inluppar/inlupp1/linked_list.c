@@ -6,13 +6,8 @@
 /// @return an empty linked list
 ioopm_list_t *ioopm_list_create(void)
 {
-    ioopm_list_t *list = calloc(1, sizeof(ioopm_list_t));
-    link_t *dummy_node = calloc(1, sizeof(link_t));
+        return calloc(1, sizeof(ioopm_list_t));
 
-    list->first = dummy_node;
-    list->last = dummy_node;
-
-    return list;
 }
 
 /// @brief Tear down the linked list and return all its memory (but not the memory of the elements)
@@ -31,7 +26,8 @@ void ioopm_list_destroy(ioopm_list_t* ls)
 
 static struct link *link_create(int value, struct link *next)
 {
-    struct link *link = calloc(1, sizeof(link)); 
+    struct link *link = calloc(1, sizeof( struct link)); 
+
     link->value = value;
     link->next = next;
     return link;
@@ -110,7 +106,7 @@ static struct link *find_previous_link(ioopm_list_t *list, int index)
 /// @param value the value to be inserted
 void ioopm_list_insert(ioopm_list_t *list, int index, int value)
 {
-    assert(0 <= index && index <= list->size - 1 && "Index to get is out of bounds" );
+    assert(0 <= index && index <= list->size && "Index to get is out of bounds" );
 
     if (index == 0)
     {
@@ -124,7 +120,7 @@ void ioopm_list_insert(ioopm_list_t *list, int index, int value)
     } else
     {
         struct link *previous = find_previous_link(list, index);
-        previous->next = link_create(list, previous->next);
+        previous->next = link_create(value, previous->next);
         list->size++;
     }
 }
@@ -157,7 +153,7 @@ int ioopm_list_remove(ioopm_list_t *list, int index)
         previous->next = to_remove->next;
     }
 
-    if (to_remove = list->last)
+    if (to_remove == list->last)
     {
         list->last = previous;
     }
