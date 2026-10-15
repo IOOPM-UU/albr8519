@@ -29,7 +29,6 @@ void ioopm_hash_table_destroy(ioopm_hash_table_t *ht)
   free(ht);
 }
 
- // Static: Only visible in this file
 static size_t string_knr_hash(const char *str)
 {
   size_t result = 0;
@@ -41,7 +40,7 @@ static size_t string_knr_hash(const char *str)
   return result;
 }
 
-static entry_t *entry_create(char *key, int value, entry_t *next)
+static entry_t *entry_create(elem_t *key, elem_t value, entry_t *next)
 {
   entry_t *entry = calloc(1, sizeof(entry_t));
   entry->key = key;
@@ -62,7 +61,7 @@ static entry_t *find_previous_entry(ioopm_hash_table_t *ht, char *key)
   return previous;
 }
 
-void ioopm_hash_table_insert(ioopm_hash_table_t *ht, char *key, int value)
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, char *key, elem_t value)
 {
   // find previous entry, or the last entry if the key does not exist
   entry_t *previous = find_previous_entry(ht, key);
@@ -78,7 +77,7 @@ void ioopm_hash_table_insert(ioopm_hash_table_t *ht, char *key, int value)
   }
 }
 
-bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, int *result)
+bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, elem_t *key, elem_t *result)
 {
   entry_t *previous = find_previous_entry(ht, key);
   if (previous->next != NULL)
@@ -89,7 +88,7 @@ bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, int *result)
   return false;
 }
 
-bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result)
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, elem_t *key, elem_t *result)
 {
   entry_t *previous = find_previous_entry(ht, key);
   entry_t *to_remove = previous->next;
@@ -105,13 +104,13 @@ bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result)
   return true;
 }
 
-bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, char *key)
+bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, elem_t *key)
 {
   int igonred_variable;
   return ioopm_hash_table_lookup(ht, key, &igonred_variable);
 }
 
-static int bucket_size(entry_t *entry)
+static size_t bucket_size(entry_t *entry)
 {
   int counter = 0;
 
@@ -123,11 +122,11 @@ static int bucket_size(entry_t *entry)
   return counter;
 }
 
-int ioopm_hash_table_size(ioopm_hash_table_t *ht)
+size_t ioopm_hash_table_size(ioopm_hash_table_t *ht)
 {
   int size = 0;
 
-  for (int index = 0; index < No_Buckets; index++ )
+  for (size_t index = 0; index < No_Buckets; index++ )
   {
     size += bucket_size(ht->buckets[index].next);
   }

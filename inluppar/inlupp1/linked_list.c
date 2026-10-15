@@ -1,4 +1,5 @@
 #include "linked_list.h"
+#include "linked_list_internal.h"
 #include <stdlib.h>
 #include <assert.h>
 
@@ -24,7 +25,7 @@ void ioopm_list_destroy(ioopm_list_t* ls)
     free(ls);
 }
 
-static struct link *link_create(int value, struct link *next)
+static struct link *link_create(elem_t value, struct link *next)
 {
     struct link *link = calloc(1, sizeof( struct link)); 
 
@@ -36,7 +37,7 @@ static struct link *link_create(int value, struct link *next)
 /// @brief Insert at the end of a linked list in O(1) time
 /// @param list the linked list that will be appended
 /// @param value the value to be appended
-void ioopm_list_append(ioopm_list_t *list, int value)
+void ioopm_list_append(ioopm_list_t *list, elem_t value)
 {
     struct link *new_link = link_create(value, NULL);
 
@@ -56,7 +57,7 @@ void ioopm_list_append(ioopm_list_t *list, int value)
 /// @brief Insert at the front of a linked list in O(1) time
 /// @param list the linked list that will be prepended to
 /// @param value the value to be prepended
-void ioopm_list_prepend(ioopm_list_t *list, int value)
+void ioopm_list_prepend(ioopm_list_t *list, elem_t value)
 {
     struct link *new_link = link_create(value, list->first);
 
@@ -71,7 +72,7 @@ void ioopm_list_prepend(ioopm_list_t *list, int value)
 /// @brief Return the first element of a linked list in O(1) time
 /// @pre the list is non-empty
 /// @param list the linked list to take the head of
-int ioopm_list_head(ioopm_list_t *list)
+elem_t ioopm_list_head(ioopm_list_t *list)
 {
     assert(!ioopm_list_is_empty(list) && "List is empty");
     return list->first->value;
@@ -80,13 +81,13 @@ int ioopm_list_head(ioopm_list_t *list)
 /// @brief Return the last element of a linked list in O(1) time
 /// @pre the list is non-empty
 /// @param list the linked list to take the last element of
-int ioopm_list_last(ioopm_list_t *list)
+elem_t ioopm_list_last(ioopm_list_t *list)
 {
     assert(!ioopm_list_is_empty(list) && "List is empty");
     return list->last->value;
 }
 
-static struct link *find_previous_link(ioopm_list_t *list, int index)
+static struct link *find_previous_link(ioopm_list_t *list, size_t index)
 {
     struct link *current = list->first;
     for(int i = 0; i < index - 1; i++)
@@ -104,9 +105,9 @@ static struct link *find_previous_link(ioopm_list_t *list, int index)
 /// @param list the linked list that will be extended
 /// @param index the position in the list
 /// @param value the value to be inserted
-void ioopm_list_insert(ioopm_list_t *list, int index, int value)
+void ioopm_list_insert(ioopm_list_t *list, size_t index, elem_t value)
 {
-    assert(0 <= index && index <= list->size && "Index to get is out of bounds" );
+    assert(index <= list->size && "Index to get is out of bounds" );
 
     if (index == 0)
     {
@@ -134,9 +135,9 @@ void ioopm_list_insert(ioopm_list_t *list, int index, int value)
 /// @param list the linked list
 /// @param index the position in the list
 /// @return the value removed
-int ioopm_list_remove(ioopm_list_t *list, int index)
+elem_t ioopm_list_remove(ioopm_list_t *list, size_t index)
 {
-    assert(0 <= index && index < list->size && "Index to be removed is out of bounds");
+    assert(index < list->size && "Index to be removed is out of bounds");
 
     struct link *previous = NULL;
     struct link *to_remove;
@@ -158,7 +159,7 @@ int ioopm_list_remove(ioopm_list_t *list, int index)
         list->last = previous;
     }
 
-    int value = to_remove->value;
+    elem_t value = to_remove->value;
     free(to_remove);
     list->size--;
     return value;
@@ -172,12 +173,12 @@ int ioopm_list_remove(ioopm_list_t *list, int index)
 /// @param list the linked list that will be extended
 /// @param index the position in the list
 /// @return the value at the given position
-int ioopm_list_get(ioopm_list_t *list, int index)
+elem_t ioopm_list_get(ioopm_list_t *list, size_t index)
 {
-    assert(0 <= index && index <= list->size - 1 && "Index to get is out of bounds" );
+    assert(index <= list->size - 1 && "Index to get is out of bounds" );
 
     struct link *current = list->first;
-    for (int i = 0; i < index; i++)
+    for (size_t i = 0; i < index; i++)
     {
         current = current->next;
     }
@@ -187,7 +188,7 @@ int ioopm_list_get(ioopm_list_t *list, int index)
 /// @brief Lookup the number of elements in the linked list in O(1) time
 /// @param list the linked list
 /// @return the number of elements in the list
-int ioopm_list_size(ioopm_list_t *list)
+size_t ioopm_list_size(ioopm_list_t *list)
 {
     return list->size;
 }

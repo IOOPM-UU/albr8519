@@ -68,7 +68,7 @@ char* ioopm_hash_table_iterator_current_key(ioopm_hash_table_iterator_t *it)
   return it->current_entry->key;
 }
 
-int ioopm_hash_table_iterator_current_value(ioopm_hash_table_iterator_t *it)
+elem_t ioopm_hash_table_iterator_current_value(ioopm_hash_table_iterator_t *it)
 {
   assert(!ioopm_hash_table_iterator_at_end(it) && "iterator at end when reading value");
   return it->current_entry->value;

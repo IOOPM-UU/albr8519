@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include "list_iterator.h"
+#include "linked_list_internal.h"
+#include <assert.h>
 
 struct list_iterator{
     struct link *current;
@@ -43,7 +45,7 @@ void ioopm_list_iterator_advance(ioopm_list_iterator_t *iter)
 /// @brief Return the current element from the underlying list
 /// @param iter the iterator
 /// @return the current element
-int ioopm_list_iterator_current(ioopm_list_iterator_t *iter)
+elem_t ioopm_list_iterator_current(ioopm_list_iterator_t *iter)
 {
     assert(!ioopm_list_iterator_at_end(iter) && "Current is at end");
     return iter->current->value;

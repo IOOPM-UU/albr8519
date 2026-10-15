@@ -1,5 +1,7 @@
 #pragma once
 #include <stdbool.h>
+#include <stddef.h>
+#include "common.h"
 
 /**
 * @file hash_table.h
@@ -26,20 +28,20 @@ void ioopm_hash_table_destroy(ioopm_hash_table_t *ht);
 /// @param ht hash table operated upon
 /// @param key key to insert
 /// @param value value to insert
-void ioopm_hash_table_insert(ioopm_hash_table_t *ht, char *key, int value);
+void ioopm_hash_table_insert(ioopm_hash_table_t *ht, char *key, elem_t value);
 
 /// @brief lookup value for key in hash table ht
 /// @param ht hash table operated upon
 /// @param key key to lookup
 /// @return the value mapped to by key (FIXME: what if the key does not exist?)
-bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, int *result);
+bool ioopm_hash_table_lookup(ioopm_hash_table_t *ht, char *key, elem_t *result);
 
 /// @brief remove any mapping from key to a value
 /// @param ht hash table
 /// @param key key to remove
 /// @param result pointer to where the removed value will be written, if the key existed
 /// @return true if the key existed and was removed, false otherwise
-bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, int *result);
+bool ioopm_hash_table_remove(ioopm_hash_table_t *ht, char *key, elem_t *result);
 
 // TODO: documentation
 bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, char *key);
@@ -48,4 +50,4 @@ bool ioopm_hash_table_has_key(ioopm_hash_table_t *ht, char *key);
 bool ioopm_hash_table_is_empty(ioopm_hash_table_t *ht);
 
 // TODO: documentation
-int ioopm_hash_table_size(ioopm_hash_table_t *ht);
+size_t ioopm_hash_table_size(ioopm_hash_table_t *ht);

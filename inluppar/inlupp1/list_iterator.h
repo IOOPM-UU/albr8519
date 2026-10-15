@@ -37,4 +37,4 @@ int ioopm_list_iterator_remove(ioopm_list_iterator_t *iter);
 /// @brief Insert a new element into the underlying list making the current element it's next
 /// @param iter the iterator
 /// @param element the element to be inserted
-void ioopm_list_iterator_insert(ioopm_list_iterator_t *iter, int element);
+void ioopm_list_iterator_insert(ioopm_list_iterator_t *iter, elem_t element);
