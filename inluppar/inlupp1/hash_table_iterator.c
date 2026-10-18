@@ -62,7 +62,7 @@ void ioopm_hash_table_iterator_advance(ioopm_hash_table_iterator_t *it)
     skip_sentinel_nodes(it);
 }
 
-char* ioopm_hash_table_iterator_current_key(ioopm_hash_table_iterator_t *it)
+elem_t ioopm_hash_table_iterator_current_key(ioopm_hash_table_iterator_t *it)
 {
   assert(!ioopm_hash_table_iterator_at_end(it) && "iterator at end when reading key");
   return it->current_entry->key;

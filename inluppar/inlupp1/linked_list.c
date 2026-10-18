@@ -90,7 +90,7 @@ elem_t ioopm_list_last(ioopm_list_t *list)
 static struct link *find_previous_link(ioopm_list_t *list, size_t index)
 {
     struct link *current = list->first;
-    for(int i = 0; i < index - 1; i++)
+    for(size_t i = 0; i < index - 1; i++)
     {
         current = current->next;
     }

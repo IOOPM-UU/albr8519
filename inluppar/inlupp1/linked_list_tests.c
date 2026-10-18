@@ -1,6 +1,9 @@
 #include <CUnit/Basic.h>
 #include <string.h>
 #include "linked_list.h"
+#include "list_iterator.h"
+#include <stdbool.h>
+#include "common.h"
 
 /// NOTE: gcc -Wall -Wextra -g linked_list.c list_iterator.c linked_list_tests.c -o linked_list_tests -lcunit && ./linked_list_tests
 
@@ -221,6 +224,130 @@ void test_list_size(void)
   ioopm_list_destroy(ls);
 }
 
+/// NOTE: FOLLOWING TEST CASES ARE GENERATED WITH USE OF AI ///
+
+// The list can store strings
+void test_generic_list_strings(void)
+{
+  ioopm_list_t *ls = ioopm_list_create();
+  ioopm_list_append(ls, string_elem("ett"));
+  ioopm_list_append(ls, string_elem("två"));
+  ioopm_list_prepend(ls, string_elem("noll"));
+
+  CU_ASSERT_EQUAL(ioopm_list_size(ls), 3);
+  CU_ASSERT_STRING_EQUAL(ioopm_list_head(ls).s, "noll");
+  CU_ASSERT_STRING_EQUAL(ioopm_list_get(ls, 1).s, "ett");
+  CU_ASSERT_STRING_EQUAL(ioopm_list_last(ls).s, "två");
+
+  ioopm_list_destroy(ls);
+}
+
+// The list can store booleans and floats
+void test_generic_list_bool_and_float(void)
+{
+  ioopm_list_t *bools = ioopm_list_create();
+  ioopm_list_append(bools, bool_elem(true));
+  ioopm_list_append(bools, bool_elem(false));
+  CU_ASSERT_TRUE(ioopm_list_get(bools, 0).b);
+  CU_ASSERT_FALSE(ioopm_list_get(bools, 1).b);
+  ioopm_list_destroy(bools);
+
+  ioopm_list_t *floats = ioopm_list_create();
+  ioopm_list_append(floats, (elem_t) { .f = 1.5f });
+  ioopm_list_append(floats, (elem_t) { .f = -2.25f });
+  CU_ASSERT_DOUBLE_EQUAL(ioopm_list_head(floats).f, 1.5, 0.0001);
+  CU_ASSERT_DOUBLE_EQUAL(ioopm_list_last(floats).f, -2.25, 0.0001);
+  ioopm_list_destroy(floats);
+}
+
+typedef struct
+{
+  char *name;
+  int age;
+} person_t;
+
+// The list can store pointers to arbitrary data through void *
+void test_generic_list_struct_pointers(void)
+{
+  person_t alice = { .name = "Alice", .age = 30 };
+  person_t bob = { .name = "Bob", .age = 25 };
+
+  ioopm_list_t *ls = ioopm_list_create();
+  ioopm_list_append(ls, ptr_elem(&alice));
+  ioopm_list_append(ls, ptr_elem(&bob));
+
+  person_t *first = ioopm_list_head(ls).p;   // the list doesn't know the type; we do
+  CU_ASSERT_PTR_EQUAL(first, &alice);
+  CU_ASSERT_STRING_EQUAL(first->name, "Alice");
+
+  person_t *second = ioopm_list_get(ls, 1).p;
+  CU_ASSERT_EQUAL(second->age, 25);
+
+  ioopm_list_destroy(ls);
+}
+
+// The list stores pointers, not copies: a change through the original
+// is visible through the list (aliasing)
+void test_generic_list_stores_pointer_not_copy(void)
+{
+  person_t alice = { .name = "Alice", .age = 30 };
+
+  ioopm_list_t *ls = ioopm_list_create();
+  ioopm_list_append(ls, ptr_elem(&alice));
+
+  alice.age = 31;   // modify the original after inserting
+  person_t *stored = ioopm_list_head(ls).p;
+  CU_ASSERT_EQUAL(stored->age, 31);
+
+  ioopm_list_destroy(ls);
+}
+
+// Insert and remove work with generic elements, and remove returns the element
+void test_generic_list_insert_remove_strings(void)
+{
+  ioopm_list_t *ls = ioopm_list_create();
+  ioopm_list_append(ls, string_elem("a"));
+  ioopm_list_append(ls, string_elem("c"));
+  ioopm_list_insert(ls, 1, string_elem("b"));   // a, b, c
+
+  CU_ASSERT_STRING_EQUAL(ioopm_list_get(ls, 1).s, "b");
+
+  elem_t removed = ioopm_list_remove(ls, 0);     // b, c
+  CU_ASSERT_STRING_EQUAL(removed.s, "a");
+  CU_ASSERT_STRING_EQUAL(ioopm_list_head(ls).s, "b");
+  CU_ASSERT_EQUAL(ioopm_list_size(ls), 2);
+
+  ioopm_list_destroy(ls);
+}
+
+// The iterator returns generic elements in order
+void test_generic_list_iterator_strings(void)
+{
+  char *expected[3] = {"x", "y", "z"};
+
+  ioopm_list_t *ls = ioopm_list_create();
+  for (int i = 0; i < 3; ++i)
+  {
+    ioopm_list_append(ls, string_elem(expected[i]));
+  }
+
+  int i = 0;
+  ioopm_list_iterator_t *it = ioopm_list_iterator_create(ls);
+  while (!ioopm_list_iterator_at_end(it))
+  {
+    CU_ASSERT_FATAL(i < 3);
+    CU_ASSERT_STRING_EQUAL(ioopm_list_iterator_current(it).s, expected[i]);
+    ++i;
+    ioopm_list_iterator_advance(it);
+  }
+  CU_ASSERT_EQUAL(i, 3);
+
+  ioopm_list_iterator_destroy(it);
+  ioopm_list_destroy(ls);
+}
+
+/// NOTE: PREVIOUS TEST CASES ARE GENERATED USING AI ///
+
 
 int main(void) {
   // First we try to set up CUnit, and exit if we fail
@@ -257,6 +384,12 @@ int main(void) {
     (CU_add_test(my_test_suite, "Removes one element from a list", test_remove_one_element) == NULL) ||
     (CU_add_test(my_test_suite, "Fetches a element from a list", test_list_get_element) == NULL) ||
     (CU_add_test(my_test_suite, "Checks the size of a list is equal to amount of elememts", test_list_size) == NULL) ||
+    (CU_add_test(my_test_suite, "Generic list: strings", test_generic_list_strings) == NULL) ||
+    (CU_add_test(my_test_suite, "Generic list: bool and float", test_generic_list_bool_and_float) == NULL) ||
+    (CU_add_test(my_test_suite, "Generic list: struct pointers", test_generic_list_struct_pointers) == NULL) ||
+    (CU_add_test(my_test_suite, "Generic list: stores pointer, not copy", test_generic_list_stores_pointer_not_copy) == NULL) ||
+    (CU_add_test(my_test_suite, "Generic list: insert and remove strings", test_generic_list_insert_remove_strings) == NULL) ||
+    (CU_add_test(my_test_suite, "Generic list: iterator over strings", test_generic_list_iterator_strings) == NULL) ||
     0
   )
     {
