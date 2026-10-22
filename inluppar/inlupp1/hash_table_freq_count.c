@@ -4,6 +4,7 @@
 #include <string.h>
 #include "hash_table.h"
 #include "hash_table_iterator.h"
+#include "common.h"
 
 /// NOTE: from copy_freq_count.c provided by instructions ///
 #define Delimiters "+-#@()[]{}.,:;!? \t\n\r"
@@ -20,16 +21,16 @@ typedef struct
 /// @brief Process a single word, updating its frequency
 /// @param ht a hash table containing the frequencies of the words found so far
 /// @param word the word to process
-void process_word(char *word, ioopm_hash_table_t *ht)
+static void process_word(char *word, ioopm_hash_table_t *ht)
 {
-  int freq = 0;
-  if (ioopm_hash_table_lookup(ht, word, &freq))
+  elem_t freq;
+  if (ioopm_hash_table_lookup(ht, string_elem(word), &freq))
   {
-    ioopm_hash_table_insert(ht, word, freq + 1);   // existing key is kept
+    ioopm_hash_table_insert(ht, string_elem(word), int_elem(freq.i + 1));   // existing key is kept
   }
   else
   {
-    ioopm_hash_table_insert(ht, strdup(word), 1);  // new word: store a copy
+    ioopm_hash_table_insert(ht, string_elem(strdup(word)), int_elem(1));  // new word: store a copy
   }
 }
 
@@ -76,32 +77,32 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  ioopm_hash_table_t *ht = ioopm_hash_table_create();
+  ioopm_hash_table_t *ht = ioopm_hash_table_create(string_hash, string_eq);
 
   for (int index = 1; index < argc; index++)
   {
     process_file(argv[index], ht);
   }
 
-  int size = ioopm_hash_table_size(ht);
+  size_t size = ioopm_hash_table_size(ht);
   word_count_t *words = calloc(size, sizeof(word_count_t));
 
   ioopm_hash_table_iterator_t *it = ioopm_hash_table_iterator_create(ht);
-  for (int i = 0; !ioopm_hash_table_iterator_at_end(it); ++i)
+  for (size_t i = 0; !ioopm_hash_table_iterator_at_end(it); ++i)
   {
-    words[i].word = ioopm_hash_table_iterator_current_key(it);
-    words[i].count = ioopm_hash_table_iterator_current_value(it);
+    words[i].word = ioopm_hash_table_iterator_current_key(it).s;
+    words[i].count = ioopm_hash_table_iterator_current_value(it).i;
     ioopm_hash_table_iterator_advance(it);
   }
   ioopm_hash_table_iterator_destroy(it);
 
   qsort(words, size, sizeof(word_count_t), compare_counts);
-  for (int i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i)
   {
     printf("%s: %d\n", words[i].word, words[i].count);
   }
 
-  for (int i = 0; i < size; ++i)
+  for (size_t i = 0; i < size; ++i)
   {
     free(words[i].word);
   }
