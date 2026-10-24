@@ -34,7 +34,7 @@ test: hash_table_tests linked_list_tests
 	./hash_table_tests
 	./linked_list_tests
 
-valgrind_test: hash_table_tests linked_list_tests
+valgrind_test: hash_table_tests linked_list_tests freq_count
 	valgrind --leak-check=full ./hash_table_tests
 	valgrind --leak-check=full ./linked_list_tests
 	valgrind --leak-check=full ./freq_count textfile_test.txt
