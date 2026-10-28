@@ -34,12 +34,21 @@ test: hash_table_tests linked_list_tests
 	./hash_table_tests
 	./linked_list_tests
 
-valgrind_test: hash_table_tests linked_list_tests freq_count
+valgrind_test: hash_table_tests linked_list_tests hash_table_freq_count
 	valgrind --leak-check=full ./hash_table_tests
 	valgrind --leak-check=full ./linked_list_tests
-	valgrind --leak-check=full ./freq_count textfile_test.txt
+	valgrind --leak-check=full ./hash_table_freq_count textfile_test.txt
+
+coverage: clean
+	$(MAKE) CFLAGS="$(CFLAGS) $(COV)" hash_table_tests linked_list_tests
+	./hash_table_tests
+	./linked_list_tests
+	gcov -b hash_table.c hash_table_iterator.c linked_list.c list_iterator.c common.c
+
+profile: clean
+	$(MAKE) CFLAGS="$(CFLAGS) -pg" freq_count
 
 clean:
-	rm -f *.o hash_table_tests linked_list_tests freq_count
+	rm -f *.o *.gcda *.gcno *.gcov gmon.out hash_table_tests linked_list_tests freq_count
 
 .PHONY: all test valgrind_test clean
