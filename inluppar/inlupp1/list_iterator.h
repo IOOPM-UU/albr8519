@@ -1,12 +1,27 @@
 #pragma once
 #include <stdbool.h>
-
 #include "linked_list.h"
+
+/**
+ * @file list_iterator.h
+ * @author Alexander Brundin
+ * @date 8 October 2026
+ * @brief An iterator for visiting the elements of a linked list in order.
+ * 
+ * An iterator is either positioned at an element, called the current
+ * element, or positioned at-the-end, once all elements have been visited.
+ * Elements are visited in list order, from the first to the last.
+ * 
+ * Preconditions marked @pre are checked with assert: breaking one aborts
+ * the program with an error message.
+ */
 
 typedef struct list_iterator ioopm_list_iterator_t;
 
-/// @brief Create a new iterator
-/// @param l the list to iterate over
+/// @brief Create an iterator for a list
+/// @param list the list to iterate over
+/// @return a new iterator positioned at the first element, or at-the-end if
+/// the list is empty; to be freed with ioopm_list_iterator_destroy
 ioopm_list_iterator_t *ioopm_list_iterator_create(ioopm_list_t *list);
 
 /// @brief Destroy the iterator and return its resources
@@ -22,19 +37,20 @@ bool ioopm_list_iterator_at_end(ioopm_list_iterator_t *iter);
 /// @param iter the iterator
 void ioopm_list_iterator_advance(ioopm_list_iterator_t *iter);
 
-/// @brief Return the current element from the underlying list
+/// @brief Check whether the iterator is positioned at-the-end
 /// @param iter the iterator
-/// @return the current element
+/// @return true if all elements have been visited (there is no current
+/// element), false otherwise
 elem_t ioopm_list_iterator_current(ioopm_list_iterator_t *iter);
 
-/// NOTE: REMOVE IS OPTIONAL TO IMPLEMENT
-/// @brief Remove the current element from the underlying list
+/// @brief Move the iterator to the next element, or to at-the-end if there
+/// are no more elements
+/// @pre iter is not at-the-end
 /// @param iter the iterator
-/// @return the removed element
 elem_t ioopm_list_iterator_remove(ioopm_list_iterator_t *iter);
 
-/// NOTE: INSERT IS OPTIONAL TO IMPLEMENT
-/// @brief Insert a new element into the underlying list making the current element it's next
+/// @brief Get the current element
+/// @pre iter is not at-the-end
 /// @param iter the iterator
-/// @param element the element to be inserted
+/// @return the current element
 void ioopm_list_iterator_insert(ioopm_list_iterator_t *iter, elem_t element);

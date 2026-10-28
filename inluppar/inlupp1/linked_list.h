@@ -3,6 +3,22 @@
 #include <stddef.h>
 #include "common.h"
 
+/**
+ * @file linked_list.h
+ * @author Alexander Brundin
+ * @date 7 October 2026
+ * @brief A generic linked list of elem_t elements.
+ * 
+ * Index starts at 0. The list has pointers to both first and last link, it
+ * also stores the size of the list. This makes append, prepend, head, last and size run
+ * in constant time
+ * 
+ * Ownership. The link allocates and frees its own links. But the user is resposible for freeing
+ * allocated memory 
+ * 
+ * Preconditions @pre are checked with asserts, if an assert i broken aborts the program immediately with an error message.
+ */
+
 typedef struct list ioopm_list_t; /// Meta: struct definition goes in C file
 
 /// @brief Creates a new empty list
